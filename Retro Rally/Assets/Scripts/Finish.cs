@@ -7,6 +7,11 @@ public class Finish : MonoBehaviour
 {
     public static Action<string, int> onFinishReached;
     private List<GameObject> finishedPlayers = new List<GameObject>();
+    private int playersCount;
+    private void Start()
+    {
+        playersCount = PhotonNetwork.PlayerList.Length;
+    }
     private void OnTriggerEnter(Collider other)
     {
         if (other.TryGetComponent(out PhotonView photonView)&&!IsPlayerAlreadyFinished(other.gameObject))

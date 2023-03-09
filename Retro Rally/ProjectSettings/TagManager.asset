@@ -8,6 +8,7 @@ TagManager:
   - SpawnPos
   - Timer
   - RoomManager
+  - RCCCanvas
   layers:
   - Default
   - TransparentFX

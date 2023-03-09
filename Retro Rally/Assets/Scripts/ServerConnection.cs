@@ -43,11 +43,15 @@ public class ServerConnection : MonoBehaviourPunCallbacks
     }
     public void CreateRoom()
     {
-        if (!string.IsNullOrEmpty(roomNameInputField.text))
+        if (!string.IsNullOrEmpty(roomNameInputField.text) && roomNameInputField.text.Length<10)
         {
             PhotonNetwork.CreateRoom(roomNameInputField.text);
+            OnlineMenuManager.instance.OpenMenu("loading");
         }
-        OnlineMenuManager.instance.OpenMenu("loading");
+        else
+        {
+            OnlineMenuManager.instance.OpenMenu("error");
+        }
     }
     public override void OnJoinedRoom()
     {
@@ -118,22 +122,31 @@ public class ServerConnection : MonoBehaviourPunCallbacks
             PhotonNetwork.NickName = name;
             OnlineMenuManager.instance.OpenMenu("title");
         }
+        else
+        {
+            OnlineMenuManager.instance.OpenMenu("error");
+        }
         
     }
     private bool CheckNickName(string name)
     {
-        for(int i=0; i<PhotonNetwork.PlayerList.Length-1;i++)
+        bool tempBool = true;
+        for(int i=0; i<PhotonNetwork.PlayerList.Length;i++)
         {
             if (PhotonNetwork.PlayerList[i].NickName==name)
             {
-                return false;
+                tempBool=false;
             }
             else
             {
-                continue;
+                tempBool = true;
             }
         }
-        return true;
+        if (name.Length > 10)
+        {
+            return false;
+        }
+        return tempBool;
     }
     public void CloseGame()
     {

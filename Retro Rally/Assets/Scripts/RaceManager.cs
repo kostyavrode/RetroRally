@@ -22,6 +22,7 @@ public class RaceManager : MonoBehaviourPunCallbacks, IPunObservable
         //ShowDelayTime();
         onRaceState += StartTimer;
         Finish.onFinishReached += ShowTime;
+        onRaceState?.Invoke(true);
     }
     private void OnDisable()
     {
@@ -35,6 +36,7 @@ public class RaceManager : MonoBehaviourPunCallbacks, IPunObservable
     }
     private void ShowDelayTime()
     {
+        onRaceState?.Invoke(false);
         photonView = GetComponent<PhotonView>();
         timeBar = GameObject.FindGameObjectWithTag("Timer").GetComponent<TMP_Text>();
         if (!PhotonNetwork.IsMasterClient)
@@ -71,14 +73,18 @@ public class RaceManager : MonoBehaviourPunCallbacks, IPunObservable
           {
               time += 1;
           });
+        else
+        {
+            //timeBar.text = time.ToString();
+        }
     }
     [PunRPC]
     private void ShowTime(string name, int playersFinished)
     {
-        if (timeDispalyed < 3)
+        //if (timeDispalyed < 3)
         {
             timeDispalyed++;
-            if (playersFinished == 2)
+            if (playersFinished == PhotonNetwork.PlayerList.Length)
             {
                 onRaceState?.Invoke(false);
                 timer?.Dispose();

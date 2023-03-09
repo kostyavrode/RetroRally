@@ -39,7 +39,7 @@ public class RCC_CarControllerV3 : MonoBehaviour {
 
 	internal Rigidbody rigid;							// Rigidbody.
 	internal bool isSleeping = false;               // Used For Disabling Unnecessary Raycasts When RB Is Sleeping.
-	public bool isCanDrive = false;
+	public bool isCanDrive = true;
 	public bool externalController = false;		// Use AI Controller.
 
 	[Obsolete("Warning 'AIController' is obsolete: 'Please use externalController.")]
@@ -238,8 +238,8 @@ public class RCC_CarControllerV3 : MonoBehaviour {
 	// Processed Inputs. DO NOT FEED THESE VALUES on your own script. Feed only above inputs.
 	internal float _gasInput{get{
 
-			if(_fuelInput <= 0f)
-				return 0f;
+			//if(_fuelInput <= 0f)
+			//	return 0f;
 
 			if(!automaticGear || semiAutomaticGear){
 				if(!changingGear && !cutGas)
@@ -306,7 +306,7 @@ public class RCC_CarControllerV3 : MonoBehaviour {
 		}set{fuelInput = value;}}
 
 	#endregion
-
+	
 	internal float rawEngineRPM = 0f;	// Actual engine RPM.
 	internal float engineRPM = 0f;			// Smoothed engine RPM.
 	
@@ -1226,12 +1226,12 @@ public class RCC_CarControllerV3 : MonoBehaviour {
 	/// Inputs this instance.
 	/// </summary>
 	private void Inputs(){
-		
-		switch(RCCSettings.controllerType){
 
-		case RCC_Settings.ControllerType.Keyboard:
-			
-			gasInput = Input.GetAxis(RCCSettings.verticalInput);
+        switch (RCCSettings.controllerType)
+        {
+
+            case RCC_Settings.ControllerType.Keyboard:
+                gasInput = Input.GetAxis("Vertical");
 			brakeInput = Mathf.Clamp01(-Input.GetAxis(RCCSettings.verticalInput));
 			handbrakeInput = Input.GetKey(RCCSettings.handbrakeKB) ? 1f : 0f;
 			steerInput = Input.GetAxis(RCCSettings.horizontalInput);
@@ -1250,8 +1250,8 @@ public class RCC_CarControllerV3 : MonoBehaviour {
 			if(Input.GetKeyDown(RCCSettings.startEngineKB))
 				KillOrStartEngine();
 
-			if(Input.GetKeyDown(RCCSettings.trailerAttachDetach))
-				DetachTrailer();
+			//if(Input.GetKeyDown(RCCSettings.trailerAttachDetach))
+			//	DetachTrailer();
 
 			if(Input.GetKeyDown(RCCSettings.rightIndicatorKB)){
 				if(indicatorsOn != IndicatorsOn.Right)
@@ -1282,92 +1282,105 @@ public class RCC_CarControllerV3 : MonoBehaviour {
 			if (Input.GetKeyUp (RCCSettings.NGear))
 				NGear = false;
 
-			if(!automaticGear){
+        if (!automaticGear)
+        {
 
-				if (Input.GetKeyDown (RCCSettings.shiftGearUp))
-					GearShiftUp ();
+            if (Input.GetKeyDown(RCCSettings.shiftGearUp))
+                GearShiftUp();
 
-				if(Input.GetKeyDown(RCCSettings.shiftGearDown))
-					GearShiftDown();	
+            if (Input.GetKeyDown(RCCSettings.shiftGearDown))
+                GearShiftDown();
 
-			}
+        }
 
-			break;
+        break;
 
 		case RCC_Settings.ControllerType.XBox360One:
 
-			gasInput = Input.GetAxis (RCCSettings.Xbox_triggerRightInput);
-			brakeInput = Input.GetAxis (RCCSettings.Xbox_triggerLeftInput);
-			steerInput = Input.GetAxis (RCCSettings.Xbox_horizontalInput);
+			gasInput = Input.GetAxis(RCCSettings.Xbox_triggerRightInput);
+        brakeInput = Input.GetAxis(RCCSettings.Xbox_triggerLeftInput);
+        steerInput = Input.GetAxis(RCCSettings.Xbox_horizontalInput);
 
-			handbrakeInput = Input.GetButton (RCCSettings.Xbox_handbrakeKB) ? 1f : 0f;
-			boostInput = Input.GetButton(RCCSettings.Xbox_boostKB) ? 1f : 0f;
+        handbrakeInput = Input.GetButton(RCCSettings.Xbox_handbrakeKB) ? 1f : 0f;
+        boostInput = Input.GetButton(RCCSettings.Xbox_boostKB) ? 1f : 0f;
 
-			if (Input.GetButtonDown (RCCSettings.Xbox_lowBeamHeadlightsKB)) {
-				lowBeamHeadLightsOn = !lowBeamHeadLightsOn;
-			}
+        if (Input.GetButtonDown(RCCSettings.Xbox_lowBeamHeadlightsKB))
+        {
+            lowBeamHeadLightsOn = !lowBeamHeadLightsOn;
+        }
 
-			if (Input.GetButtonDown (RCCSettings.Xbox_highBeamHeadlightsKB)) {
-				highBeamHeadLightsOn = true;
-			} else if (Input.GetButtonUp (RCCSettings.Xbox_highBeamHeadlightsKB)) {
-				highBeamHeadLightsOn = false;
-			}
+        if (Input.GetButtonDown(RCCSettings.Xbox_highBeamHeadlightsKB))
+        {
+            highBeamHeadLightsOn = true;
+        }
+        else if (Input.GetButtonUp(RCCSettings.Xbox_highBeamHeadlightsKB))
+        {
+            highBeamHeadLightsOn = false;
+        }
 
-			if (Input.GetButtonDown (RCCSettings.Xbox_startEngineKB))
-				KillOrStartEngine ();
+        if (Input.GetButtonDown(RCCSettings.Xbox_startEngineKB))
+            KillOrStartEngine();
 
-			if(Input.GetButtonDown(RCCSettings.Xbox_trailerAttachDetach))
-				DetachTrailer();
-//
-			float indicator = Input.GetAxis (RCCSettings.Xbox_indicatorKB);
-			float indicatorHazard = Input.GetAxis (RCCSettings.Xbox_hazardIndicatorKB);
+        if (Input.GetButtonDown(RCCSettings.Xbox_trailerAttachDetach))
+            DetachTrailer();
+        //
+        float indicator = Input.GetAxis(RCCSettings.Xbox_indicatorKB);
+        float indicatorHazard = Input.GetAxis(RCCSettings.Xbox_hazardIndicatorKB);
 
-			if (indicatorHazard >= .5f) {
+        if (indicatorHazard >= .5f)
+        {
 
-				if (indicatorsOn != IndicatorsOn.All)
-					indicatorsOn = IndicatorsOn.All;
+            if (indicatorsOn != IndicatorsOn.All)
+                indicatorsOn = IndicatorsOn.All;
 
-			}else if (indicator >= .5f) {
-				
-				if (indicatorsOn != IndicatorsOn.Right)
-					indicatorsOn = IndicatorsOn.Right;
-				
-			} else if (indicator <= -.5f) {
-				
-				if (indicatorsOn != IndicatorsOn.Left)
-					indicatorsOn = IndicatorsOn.Left;
+        }
+        else if (indicator >= .5f)
+        {
 
-			} else {
+            if (indicatorsOn != IndicatorsOn.Right)
+                indicatorsOn = IndicatorsOn.Right;
 
-				indicatorsOn = IndicatorsOn.Off;
+        }
+        else if (indicator <= -.5f)
+        {
 
-			}
+            if (indicatorsOn != IndicatorsOn.Left)
+                indicatorsOn = IndicatorsOn.Left;
 
-//
-//			if (Input.GetKeyDown (RCCSettings.NGear))
-//				NGear = true;
-//
-//			if (Input.GetKeyUp (RCCSettings.NGear))
-//				NGear = false;
-//
-			if (!automaticGear) {
+        }
+        else
+        {
 
-				if (Input.GetButtonDown (RCCSettings.Xbox_shiftGearUp))
-					GearShiftUp ();
+            indicatorsOn = IndicatorsOn.Off;
 
-				if (Input.GetButtonDown (RCCSettings.Xbox_shiftGearDown))
-					GearShiftDown ();	
+        }
 
-			}
-			
-			break;
 
-		}
+        if (Input.GetKeyDown(RCCSettings.NGear))
+            NGear = true;
+
+        if (Input.GetKeyUp(RCCSettings.NGear))
+            NGear = false;
+
+        if (!automaticGear)
+        {
+
+            if (Input.GetButtonDown(RCCSettings.Xbox_shiftGearUp))
+                GearShiftUp();
+
+            if (Input.GetButtonDown(RCCSettings.Xbox_shiftGearDown))
+                GearShiftDown();
+
+        }
+
+        break;
+
+    }
 
 		if (permanentGas)
-			gasInput = 1f;
+            gasInput = 1f;
 
-	}
+}
 	
 	void FixedUpdate (){
 

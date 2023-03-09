@@ -44,11 +44,23 @@ public class PlayerManager : MonoBehaviour
             return spawnPositions[0].position;
         }
         else
-            return spawnPositions[UnityEngine.Random.Range(1, spawnPositions.Count - 1)].position;
+            return spawnPositions[GetSpawnNumber()].position;
         //int lastIndex = spawnPositions.Count - 1;
         //Vector3 tempPos = spawnPositions[UnityEngine.Random.Range(0,spawnPositions.Count-1)].transform.position;
         //spawnPositions.RemoveAt(lastIndex);
         //Debug.Log(spawnPositions.Count);
         //return tempPos;
+    }
+    private int GetSpawnNumber()
+    {
+        int tempNum = 5;
+        for(int i=0;i<PhotonNetwork.PlayerList.Length;i++)
+        {
+            if (PhotonNetwork.PlayerList[i].NickName==PhotonNetwork.NickName)
+            {
+                tempNum = i;
+            }
+        }
+        return tempNum;
     }
 }
